@@ -1,5 +1,6 @@
 using EFCore.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EFCore.Data
 {
@@ -9,14 +10,19 @@ namespace EFCore.Data
     {
     }
 
-    DbSet<Pedido> Pedidos { get; set; }
-    DbSet<Produto> Produtos { get; set; }
-    DbSet<PedidoItem> PedidoItens { get; set; }
-    DbSet<Cliente> Clientes { get; set; }
+    private static readonly ILoggerFactory _logger = LoggerFactory.Create(l => l.AddConsole());
+
+    public DbSet<Pedido> Pedidos { get; set; }
+    public DbSet<Produto> Produtos { get; set; }
+    public DbSet<PedidoItem> PedidoItens { get; set; }
+    public DbSet<Cliente> Clientes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Host=localhost;Database=EF;Username=postgres;Password=123456;");
+        optionsBuilder
+          .UseLoggerFactory(_logger)
+          .EnableSensitiveDataLogging()
+          .UseNpgsql("Host=localhost;Database=EF;Username=postgres;Password=123456;");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
